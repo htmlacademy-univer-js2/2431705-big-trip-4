@@ -7,8 +7,6 @@ const siteMainContainer = document.querySelector('.trip-main');
 const filterContainer = document.querySelector('.trip-controls__filters');
 const tripEventsContainer = document.querySelector('.trip-events');
 
-console.log(siteMainContainer);
-
 const boardPresenter = new BoardPresenter({
   container: tripEventsContainer
 });
