@@ -112,12 +112,15 @@ export default class EditPointView extends AbstractView{
   #pointDestination;
   #pointOffers;
   #point;
+  #onCloseEditPoint;
 
-  constructor({point = POINT_EMPTY, pointDestination, pointOffers}) {
+  constructor({point = POINT_EMPTY, pointDestination, pointOffers, onCloseEditPoint}) {
     super();
     this.#point = point;
     this.#pointDestination = pointDestination;
     this.#pointOffers = pointOffers;
+    this.#onCloseEditPoint = onCloseEditPoint;
+    this.#closeEditPoint();
   }
 
   get template() {
@@ -127,6 +130,17 @@ export default class EditPointView extends AbstractView{
       pointOffers: this.#pointOffers
     });
   }
+
+  #closeEditPoint = () => {
+    this.element
+      .querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#closeEditPointHandler);
+  };
+
+  #closeEditPointHandler = (evt) => {
+    evt.preventDefault();
+    this.#onCloseEditPoint();
+  };
 
   getElement() {
     if (!this.element) {
