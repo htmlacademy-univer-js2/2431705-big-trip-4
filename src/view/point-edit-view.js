@@ -1,5 +1,6 @@
 import { createElement } from '../render.js';
 import { POINT_EMPTY, TYPES } from '../const.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {formatToSlashDate} from '../utils.js';
 
 function createTypesElements(typeArray){
@@ -106,23 +107,24 @@ function createPointEditElement({point, pointDestination, pointOffers}) {
   </li>`;
 }
 
-export default class EditPointView {
+export default class EditPointView extends AbstractView{
 
-  pointDestination;
-  pointOffers;
-  point;
+  #pointDestination;
+  #pointOffers;
+  #point;
 
   constructor({point = POINT_EMPTY, pointDestination, pointOffers}) {
-    this.point = point;
-    this.pointDestination = pointDestination;
-    this.pointOffers = pointOffers;
+    super();
+    this.#point = point;
+    this.#pointDestination = pointDestination;
+    this.#pointOffers = pointOffers;
   }
 
-  getTemplate() {
+  get template() {
     return createPointEditElement({
-      point: this.point,
-      pointDestination: this.pointDestination,
-      pointOffers: this.pointOffers
+      point: this.#point,
+      pointDestination: this.#pointDestination,
+      pointOffers: this.#pointOffers
     });
   }
 
