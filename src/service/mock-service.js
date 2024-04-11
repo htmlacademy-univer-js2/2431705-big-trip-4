@@ -26,7 +26,7 @@ export default class MockService {
   }
 
   getPoints(){
-    return [];
+    return this.points;
   }
 
   generateDestinations() {
