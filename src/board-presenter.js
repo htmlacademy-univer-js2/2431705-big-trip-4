@@ -2,13 +2,12 @@ import SortView from '../src/view/sort-view';
 import EventListView from '../src/view/event-list-view';
 import PointEditView from '../src/view/point-edit-view';
 import PointView from '../src/view/point-view';
-import {render} from '../src/render';
+import {render, replace} from '../src/framework/render';
 
-const POINT_COUNT = 5;
 
 export default class BoardPresenter {
-  sortComponent = new SortView();
-  eventListComponent = new EventListView();
+  #sortComponent = new SortView();
+  #eventListComponent = new EventListView();
 
   constructor({container, destinationsModel, offersModel, pointsModel}) {
     this.container = container;
@@ -20,20 +19,48 @@ export default class BoardPresenter {
   }
 
   init(){
-    render(this.eventListComponent, this.container);
-    render(this.sortComponent, this.container);
-    render(new PointEditView({
+    render(this.#eventListComponent, this.container);
+    render(this.#sortComponent, this.container);
+    this.points.forEach((point) => this.#renderPoint(point));
+  }
+
+  #renderPoint(point){
+    const pointElement = new PointView({
+      point: point,
+      pointDestination: this.destinationsModel.getById(point.destination),
+      pointOffers: this.offersModel.getByType(point.type),
+      onEditClick:onEditClick
+    });
+
+    const editPointElement = new PointEditView({
       point: this.points[0],
       pointDestination: this.destinationsModel.getById(this.points[0].destination),
-      pointOffers: this.offersModel.getByType(this.points[0].type)
-    }), this.eventListComponent.getElement());
+      pointOffers: this.offersModel.getByType(this.points[0].type),
+      onCloseEditPoint:onCloseEditClick
+    });
 
-    for(let i = 1; i < POINT_COUNT; i++){
-      render(new PointView({
-        point: this.points[i],
-        pointDestination: this.destinationsModel.getById(this.points[i].destination),
-        pointOffers: this.offersModel.getByType(this.points[i].type),
-      }), this.eventListComponent.getElement());
+    function toggleEditElements(elementToShow, elementToHide) {
+      replace(elementToShow, elementToHide);
     }
+
+    function onEditClick() {
+      toggleEditElements(editPointElement, pointElement);
+      document.addEventListener('keydown', escKeydown);
+    }
+
+    function onCloseEditClick() {
+      toggleEditElements(pointElement, editPointElement);
+      document.addEventListener('keydown', escKeydown);
+    }
+
+    function escKeydown(evt) {
+      if (evt.keyCode === 27) {
+        evt.preventDefault();
+        toggleEditElements(pointElement, editPointElement);
+        document.removeEventListener('keydown', escKeydown);
+      }
+    }
+
+    render(pointElement, this.#eventListComponent.element);
   }
 }
