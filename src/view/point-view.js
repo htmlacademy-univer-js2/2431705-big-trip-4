@@ -1,4 +1,3 @@
-import { createElement } from '../render.js';
 import { POINT_EMPTY} from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 import{formatStringDateTime, getPointDuration, formatStringTime, formatStringDate} from '../utils.js';
@@ -89,16 +88,4 @@ export default class PointView extends AbstractView{
     evt.preventDefault();
     this.#onEditClick();
   };
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
 }

@@ -19,8 +19,8 @@ export default class BoardPresenter {
   }
 
   init(){
-    render(this.#eventListComponent, this.container);
     render(this.#sortComponent, this.container);
+    render(this.#eventListComponent, this.container);
     this.points.forEach((point) => this.#renderPoint(point));
   }
 
@@ -33,9 +33,9 @@ export default class BoardPresenter {
     });
 
     const editPointElement = new PointEditView({
-      point: this.points[0],
-      pointDestination: this.destinationsModel.getById(this.points[0].destination),
-      pointOffers: this.offersModel.getByType(this.points[0].type),
+      point: point,
+      pointDestination: this.destinationsModel.getById(point.destination),
+      pointOffers: this.offersModel.getByType(point.type),
       onCloseEditPoint:onCloseEditClick
     });
 
@@ -50,11 +50,10 @@ export default class BoardPresenter {
 
     function onCloseEditClick() {
       toggleEditElements(pointElement, editPointElement);
-      document.addEventListener('keydown', escKeydown);
     }
 
     function escKeydown(evt) {
-      if (evt.keyCode === 27) {
+      if (evt.keyCode === 27 || evt.key === 'Escape') {
         evt.preventDefault();
         toggleEditElements(pointElement, editPointElement);
         document.removeEventListener('keydown', escKeydown);

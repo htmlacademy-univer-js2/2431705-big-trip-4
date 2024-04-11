@@ -1,4 +1,3 @@
-import { createElement } from '../render.js';
 import { POINT_EMPTY, TYPES } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 import {formatToSlashDate} from '../utils.js';
@@ -141,16 +140,4 @@ export default class EditPointView extends AbstractView{
     evt.preventDefault();
     this.#onCloseEditPoint();
   };
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
 }
