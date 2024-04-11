@@ -1,4 +1,3 @@
-import { createElement } from '../render.js';
 import { POINT_EMPTY, TYPES } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 import {formatToSlashDate} from '../utils.js';
@@ -113,14 +112,17 @@ export default class EditPointView extends AbstractView{
   #pointOffers;
   #point;
   #onCloseEditPoint;
+  #onSubmiClick;
 
-  constructor({point = POINT_EMPTY, pointDestination, pointOffers, onCloseEditPoint}) {
+  constructor({point = POINT_EMPTY, pointDestination, pointOffers, onCloseEditPoint, onSubmiClick}) {
     super();
     this.#point = point;
     this.#pointDestination = pointDestination;
     this.#pointOffers = pointOffers;
     this.#onCloseEditPoint = onCloseEditPoint;
+    this.#onSubmiClick = onSubmiClick;
     this.#closeEditPoint();
+    this.#submitEditPoint();
   }
 
   get template() {
@@ -137,20 +139,19 @@ export default class EditPointView extends AbstractView{
       .addEventListener('click', this.#closeEditPointHandler);
   };
 
+  #submitEditPoint = () =>{
+    this.element
+      .querySelector('form')
+      .addEventListener('submit', this.#submiClickHandler);
+  };
+
   #closeEditPointHandler = (evt) => {
     evt.preventDefault();
     this.#onCloseEditPoint();
   };
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #submiClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onSubmiClick();
+  };
 }

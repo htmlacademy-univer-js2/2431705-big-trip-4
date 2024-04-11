@@ -16,6 +16,13 @@ export const TYPES = [
   'restaurant',
 ];
 
+export const FILTER_TYPES = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PRESENT: 'present',
+  PAST: 'past'
+};
+
 export const POINT_FILTERS = [
   'everything',
   'future',
