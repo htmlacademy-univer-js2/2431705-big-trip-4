@@ -2,6 +2,7 @@ import SortView from '../src/view/sort-view';
 import EventListView from '../src/view/event-list-view';
 import PointEditView from '../src/view/point-edit-view';
 import PointView from '../src/view/point-view';
+import EmptyView from './view/empty-view';
 import {render, replace} from '../src/framework/render';
 
 
@@ -22,6 +23,9 @@ export default class BoardPresenter {
     render(this.#sortComponent, this.container);
     render(this.#eventListComponent, this.container);
     this.points.forEach((point) => this.#renderPoint(point));
+    if (this.points.length === 0){
+      render(new EmptyView(), this.container);
+    }
   }
 
   #renderPoint(point){
