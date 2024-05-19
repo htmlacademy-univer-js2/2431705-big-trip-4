@@ -1,12 +1,13 @@
-import SortView from '../view/sort-view';
 import EventListView from '../view/event-list-view';
 import EmptyView from '../view/empty-view';
 import PointPresenter from './point-presenter';
+import SortPresenter from './sort-presenter';
 import {render} from '../framework/render';
 import { updateItem } from '../mock/util';
+import { sort } from '../utils';
 
 export default class BoardPresenter {
-  #sortComponent = new SortView();
+  #sortPresenter = null;
   #eventListComponent = new EventListView();
   #pointPresenters = new Map();
   #destinationsModel;
@@ -18,17 +19,29 @@ export default class BoardPresenter {
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
     this.pointsModel = pointsModel;
-    this.#points = [...pointsModel.getAll()];
+    this.#points = sort([...pointsModel.getAll()]);
   }
 
   init(){
-    render(this.#sortComponent, this.container);
+    this.#renderSort();
     render(this.#eventListComponent, this.container);
-    this.#points.forEach((point) => this.#renderPoint(point));
+    this.#renderPointList();
     if (this.#points.length === 0){
       render(new EmptyView(), this.container);
     }
   }
+
+  #renderPointList = () =>{
+    this.#points.forEach((point) => this.#renderPoint(point));
+  };
+
+  #renderSort = () =>{
+    this.#sortPresenter = new SortPresenter({
+      container: this.container,
+      handleSortChange: this.#handleSortChange,
+    });
+    this.#sortPresenter.init();
+  };
 
   #renderPoint(point){
     const pointPresenter = new PointPresenter({
@@ -55,5 +68,11 @@ export default class BoardPresenter {
   #clearTaskList = () => {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
+  };
+
+  #handleSortChange = (sortType) => {
+    this.#points = sort(this.#points, sortType);
+    this.#clearTaskList();
+    this.#renderPointList();
   };
 }
