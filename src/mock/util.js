@@ -27,3 +27,6 @@ export const getRandomDate = (next) => {
 
   return date;
 };
+
+export const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
+

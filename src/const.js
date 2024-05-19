@@ -4,6 +4,11 @@ export const DESTINATION_COUNT = 5;
 
 export const POINT_COUNT = 5;
 
+export const Mode = {
+  DEFAULT: 'default',
+  EDITING: 'editing',
+};
+
 export const TYPES = [
   'taxi',
   'flight',
