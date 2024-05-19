@@ -35,13 +35,21 @@ export const POINT_FILTERS = [
   'past',
 ];
 
-export const POINT_SORTS = [
-  'day',
-  'event',
-  'time',
-  'price',
-  'offers',
-];
+export const POINT_SORTS = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFERS: 'offers',
+};
+
+export const EnabledSortType = {
+  [POINT_SORTS.DAY]: true,
+  [POINT_SORTS.EVENT]: false,
+  [POINT_SORTS.TIME]: true,
+  [POINT_SORTS.PRICE]: true,
+  [POINT_SORTS.OFFERS]: false
+};
 
 export const POINT_EMPTY = {
   basePrice: 0,
