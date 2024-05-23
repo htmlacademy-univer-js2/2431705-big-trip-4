@@ -1,6 +1,7 @@
 import { POINT_EMPTY, TYPES } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {formatToSlashDate} from '../utils.js';
+import CalendarView from './calendar-view.js';
 
 function createTypesElements(typeArray){
 
@@ -131,6 +132,8 @@ export default class EditPointView extends AbstractStatefulView{
   #offers;
   #onCloseEditPoint;
   #onSubmiClick;
+  #datepickerFrom;
+  #datepickerTo;
 
   constructor({point = POINT_EMPTY, destinations, offers, onCloseEditPoint, onSubmiClick}) {
     super();
@@ -163,6 +166,8 @@ export default class EditPointView extends AbstractStatefulView{
     this.element
       .querySelector('.event__type-group')
       .addEventListener('change', this.#typeChangeHandler);
+
+    this.#setDatapickers();
   };
 
   get template() {
@@ -172,6 +177,20 @@ export default class EditPointView extends AbstractStatefulView{
       offers: this.#offers
     });
   }
+
+  removeElement = () =>{
+    super.removeElement();
+
+    if(this.#datepickerFrom){
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if(this.#datepickerTo){
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  };
 
   reset = (point) => this.updateElement({ point });
 
@@ -233,6 +252,45 @@ export default class EditPointView extends AbstractStatefulView{
   #submiClickHandler = (evt) => {
     evt.preventDefault();
     this.#onSubmiClick();
+  };
+
+  #setDatapickers = () =>{
+    const [dateFromElement, dateToElement] = this.element.querySelectorAll('.event__input--time');
+    this.#datepickerFrom = new CalendarView(
+      {
+        element: dateFromElement,
+        defaultDate: this._state.point.dateFrom,
+        maxDate: this._state.point.dateTo,
+        onClose: this.#dateFromCloseHandler
+      });
+
+    this.#datepickerTo = new CalendarView(
+      {
+        element: dateToElement,
+        defaultDate: this._state.point.dateTo,
+        minDate: this._state.point.dateFrom,
+        onClose: this.#dateToCloseHandler
+      });
+  };
+
+  #dateToCloseHandler = ([userDate]) =>{
+    this._setState({
+      point: {
+        ...this._state.point,
+        dateTo: userDate
+      }});
+
+    this.#datepickerFrom.set('maxDate', this._state.point.dateTo);
+  };
+
+  #dateFromCloseHandler = ([userDate]) =>{
+    this._setState({
+      point: {
+        ...this._state.point,
+        dateFrom: userDate
+      }});
+
+    this.#datepickerTo.set('minDate', this._state.point.dateTo);
   };
 
   static parsePointToState = ({ point }) => ({ point });
