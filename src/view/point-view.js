@@ -18,7 +18,6 @@ function createOfferElements(pointOffers, selectedOffers) {
 
 function createPointElement({point, pointDestination, pointOffers}) {
   const {basePrice, dateFrom, dateTo, isFavorite, type} = point;
-  console.log("hello");
   return `
     <li class="trip-events__item">
       <div class="event">
