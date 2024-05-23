@@ -11,7 +11,7 @@ export const getRandomDestination = () => {
     description: description,
     pictures: [
       {
-        'scr': `https://loremflickr.com/248/152?random=${crypto.randomUUID()}`,
+        'src': `https://loremflickr.com/248/152?random=${crypto.randomUUID()}`,
         'description' : `${city} description`
       }
     ]
