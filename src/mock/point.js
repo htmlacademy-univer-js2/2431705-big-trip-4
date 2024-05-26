@@ -11,3 +11,5 @@ export const getRandomPoint = (type, destinationId, offerIds) => ({
   offers: offerIds,
   type
 });
+
+

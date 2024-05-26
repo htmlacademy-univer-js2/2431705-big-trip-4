@@ -21,6 +21,23 @@ export const TYPES = [
   'restaurant',
 ];
 
+export const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR'
+};
+
+export const EditType = {
+  EDITING: 'EDITING',
+  CREATING: 'CREATING',
+};
+
+export const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
 export const FILTER_TYPES = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
