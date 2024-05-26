@@ -1,7 +1,9 @@
-import { POINT_EMPTY, TYPES } from '../const.js';
+import { POINT_EMPTY, TYPES,EditType } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {formatToSlashDate} from '../utils.js';
 import CalendarView from './calendar-view.js';
+
+const DEFAULT_TYPE = 'flight';
 
 function createTypesElements(typeArray){
 
@@ -19,7 +21,7 @@ function createTypesElements(typeArray){
 
 function createDestinationPhotos(pointDestination){
   let photos = '<div class="event__photos-tape">';
-  pointDestination.pictures.forEach((picture) =>{
+  pointDestination?.pictures.forEach((picture) =>{
     photos += `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`;
   });
   return `${photos}</div>`;
@@ -39,7 +41,7 @@ function createOfferSelector(pointOffers, offersArray){
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">`;
 
-  offersArray.forEach((offer) => {
+  offersArray?.forEach((offer) => {
     const checked = pointOffers.some((offerId) => offerId === offer.id) ? 'checked' : '';
     offersElements += `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden" id="event-offer-meal-${offer.id}" type="checkbox" name="event-offer-meal" ${checked}>
@@ -55,12 +57,36 @@ function createOfferSelector(pointOffers, offersArray){
 
   return offersElements;
 }
+function createSaveButton() {
+  return '<button class="event__save-btn  btn  btn--blue" type="submit">Save</button>';
+}
 
-function createPointEditElement({point, destinations, offers}) {
+function createDeleteButton({type}){
+  const label = type === EditType.CREATING ? 'Cancel' : 'Delete';
+  return `<button class="event__reset-btn" type="reset">${label}</button>`;
+}
+
+function createRollupButton(){
+  return `<button class="event__rollup-btn" type="button">
+  <span class="visually-hidden">Open event</span>
+</button>`;
+}
+
+function createPointControls({type}){
+  return `${createSaveButton()}
+  ${createDeleteButton({type})}
+  ${type === EditType.CREATING ? '' : createRollupButton()}`;
+}
+
+function createPointEditElement({point, destinations, offers, pointType}) {
   const pointDestination = destinations.find((destination) => destination.id === point.destination);
-  const pointOffers = offers.find((subOffers) => subOffers.type === point.type).offers;
+  const pointOffers = offers.find((subOffers) => subOffers.type === point.type)?.offers;
 
-  const {basePrice, dateFrom, dateTo, type} = point;
+  const name = pointType === EditType.CREATING ? '' : pointDestination.name;
+  const {basePrice} = point;
+  const type = pointType === EditType.CREATING ? DEFAULT_TYPE : point.type;
+  const dateFrom = pointType === EditType.CREATING ? '' : formatToSlashDate(point.dateFrom);
+  const dateTo = pointType === EditType.CREATING ? '' : formatToSlashDate(point.dateTo);
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -85,16 +111,16 @@ function createPointEditElement({point, destinations, offers}) {
           <label class="event__label  event__type-output" for="event-destination-1">
           ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination.name}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
           ${createDestinationList(destinations)}
         </div>
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatToSlashDate(dateFrom)}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatToSlashDate(dateTo)}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -102,21 +128,17 @@ function createPointEditElement({point, destinations, offers}) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
-        </button>
+        ${createPointControls({type : pointType})}
       </header>
       <section class="event__details">
-      ${createOfferSelector(point.offers, pointOffers)}
+      ${createOfferSelector(point?.offers, pointOffers)}
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${pointDestination.description}</p>
+          <p class="event__destination-description">${pointType === EditType.CREATING ? '' : pointDestination.description}</p>
           <div class="event__photos-container">
           ${createDestinationPhotos(pointDestination)}
           </div>
@@ -134,22 +156,24 @@ export default class EditPointView extends AbstractStatefulView{
   #onSubmiClick;
   #datepickerFrom;
   #datepickerTo;
+  #onDeleteClick;
+  #pointType;
 
-  constructor({point = POINT_EMPTY, destinations, offers, onCloseEditPoint, onSubmiClick}) {
+  constructor({point = POINT_EMPTY, destinations, offers, onCloseEditPoint, onSubmiClick, onDeleteClick, pointType = EditType.EDITING}) {
     super();
     this.#destinations = destinations;
+    this.onDeleteClick = onDeleteClick;
     this.#offers = offers;
     this.#onCloseEditPoint = onCloseEditPoint;
     this.#onSubmiClick = onSubmiClick;
+    this.#onDeleteClick = onDeleteClick;
+    this.#pointType = pointType;
     this._setState(EditPointView.parsePointToState({point}));
     this.#submitEditPoint();
     this._restoreHandlers();
   }
 
   _restoreHandlers = () =>{
-    this.element
-      .querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#closeEditPointHandler);
 
     this.element
       .querySelector('.event__input--destination')
@@ -167,6 +191,22 @@ export default class EditPointView extends AbstractStatefulView{
       .querySelector('.event__type-group')
       .addEventListener('change', this.#typeChangeHandler);
 
+
+    if (this.#pointType === EditType.EDITING) {
+      this.element
+        .querySelector('.event__rollup-btn')
+        .addEventListener('click', this.#closeEditPointHandler);
+
+      this.element
+        .querySelector('.event__reset-btn')
+        .addEventListener('click', this.#deleteClickHandler);
+    }
+
+    if (this.#pointType === EditType.CREATING) {
+      this.element
+        .querySelector('.event__reset-btn')
+        .addEventListener('click', this.#closeEditPointHandler);
+    }
     this.#setDatapickers();
   };
 
@@ -174,7 +214,8 @@ export default class EditPointView extends AbstractStatefulView{
     return createPointEditElement({
       point: this._state.point,
       destinations: this.#destinations,
-      offers: this.#offers
+      offers: this.#offers,
+      pointType: this.#pointType,
     });
   }
 
@@ -251,7 +292,7 @@ export default class EditPointView extends AbstractStatefulView{
 
   #submiClickHandler = (evt) => {
     evt.preventDefault();
-    this.#onSubmiClick();
+    this.#onSubmiClick(EditPointView.parseStateToPoint(this._state));
   };
 
   #setDatapickers = () =>{
@@ -291,6 +332,11 @@ export default class EditPointView extends AbstractStatefulView{
       }});
 
     this.#datepickerTo.set('minDate', this._state.point.dateTo);
+  };
+
+  #deleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onDeleteClick(EditPointView.parseStateToPoint(this._state));
   };
 
   static parsePointToState = ({ point }) => ({ point });

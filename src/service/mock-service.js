@@ -56,4 +56,16 @@ export default class MockService {
 
     });
   }
+
+  updatePoint(updatedPoint){
+    return updatedPoint;
+  }
+
+  addPoint(data){
+    return {...data, id: crypto.randomUUID()};
+  }
+
+  deletePoint(){
+    //
+  }
 }

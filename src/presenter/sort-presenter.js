@@ -1,5 +1,5 @@
 import { EnabledSortType, POINT_SORTS } from '../const';
-import { render } from '../framework/render';
+import { render, remove } from '../framework/render';
 import SortView from '../view/sort-view';
 
 export default class SortPresenter {
@@ -12,6 +12,10 @@ export default class SortPresenter {
   constructor({ container, handleSortChange }) {
     this.#container = container;
     this.#handleSortChange = handleSortChange;
+  }
+
+  destroy() {
+    remove(this.#sortElement);
   }
 
   init() {
