@@ -1,7 +1,8 @@
 import { POINT_EMPTY, TYPES,EditType } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {formatToSlashDate} from '../utils.js';
+import {formatToSlashDate} from '../utils/utils.js';
 import CalendarView from './calendar-view.js';
+import he from 'he';
 
 const DEFAULT_TYPE = 'flight';
 
@@ -78,12 +79,12 @@ function createPointControls({type}){
   ${type === EditType.CREATING ? '' : createRollupButton()}`;
 }
 
-function createPointEditElement({point, destinations, offers, pointType}) {
+function createPointEditElement({state, destinations, offers, pointType}) {
+  const { point, isDisabled, isSaving, isDeleting } = state;
   const pointDestination = destinations.find((destination) => destination.id === point.destination);
   const pointOffers = offers.find((subOffers) => subOffers.type === point.type)?.offers;
-
-  const name = pointType === EditType.CREATING ? '' : pointDestination.name;
-  const {basePrice} = point;
+  const name = pointType === EditType.CREATING ? '' : he.encode(pointDestination.name);
+  const {basePrice, bestPrice } = point;
   const type = pointType === EditType.CREATING ? DEFAULT_TYPE : point.type;
   const dateFrom = pointType === EditType.CREATING ? '' : formatToSlashDate(point.dateFrom);
   const dateTo = pointType === EditType.CREATING ? '' : formatToSlashDate(point.dateTo);
@@ -106,15 +107,14 @@ function createPointEditElement({point, destinations, offers, pointType}) {
             </fieldset>
           </div>
         </div>
-
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
           ${type}
           </label>
+
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
           ${createDestinationList(destinations)}
         </div>
-
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
           <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}">
@@ -122,7 +122,6 @@ function createPointEditElement({point, destinations, offers, pointType}) {
           <label class="visually-hidden" for="event-end-time-1">To</label>
           <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}">
         </div>
-
         <div class="event__field-group  event__field-group--price">
           <label class="event__label" for="event-price-1">
             <span class="visually-hidden">Price</span>
@@ -130,7 +129,6 @@ function createPointEditElement({point, destinations, offers, pointType}) {
           </label>
           <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
         </div>
-
         ${createPointControls({type : pointType})}
       </header>
       <section class="event__details">
@@ -169,16 +167,13 @@ export default class EditPointView extends AbstractStatefulView{
     this.#onDeleteClick = onDeleteClick;
     this.#pointType = pointType;
     this._setState(EditPointView.parsePointToState({point}));
-    this.#submitEditPoint();
     this._restoreHandlers();
   }
 
   _restoreHandlers = () =>{
-
     this.element
       .querySelector('.event__input--destination')
       .addEventListener('change', this.#onDestinationChange);
-
     this.element
       .querySelector('.event__available-offers')
       .addEventListener('change', this.#offerChangeHandler);
@@ -187,16 +182,19 @@ export default class EditPointView extends AbstractStatefulView{
       .querySelector('.event__input--price')
       .addEventListener('change', this.#priceChangeHandler);
 
+
     this.element
       .querySelector('.event__type-group')
       .addEventListener('change', this.#typeChangeHandler);
 
+    this.element
+      .querySelector('form')
+      .addEventListener('submit', this.#submiClickHandler);
 
     if (this.#pointType === EditType.EDITING) {
       this.element
         .querySelector('.event__rollup-btn')
         .addEventListener('click', this.#closeEditPointHandler);
-
       this.element
         .querySelector('.event__reset-btn')
         .addEventListener('click', this.#deleteClickHandler);
@@ -212,7 +210,7 @@ export default class EditPointView extends AbstractStatefulView{
 
   get template() {
     return createPointEditElement({
-      point: this._state.point,
+      state: this._state,
       destinations: this.#destinations,
       offers: this.#offers,
       pointType: this.#pointType,
@@ -234,12 +232,6 @@ export default class EditPointView extends AbstractStatefulView{
   };
 
   reset = (point) => this.updateElement({ point });
-
-  #submitEditPoint = () =>{
-    this.element
-      .querySelector('form')
-      .addEventListener('submit', this.#submiClickHandler);
-  };
 
   #onDestinationChange = (evt) => {
     const newDestinationName = evt.target.value;
@@ -268,7 +260,7 @@ export default class EditPointView extends AbstractStatefulView{
     this._setState({
       point: {
         ...this._state.point,
-        basePrice: evt.target.value,
+        basePrice: parseInt(evt.target.value, 10),
       }
     });
   };
@@ -339,6 +331,17 @@ export default class EditPointView extends AbstractStatefulView{
     this.#onDeleteClick(EditPointView.parseStateToPoint(this._state));
   };
 
-  static parsePointToState = ({ point }) => ({ point });
+  static parsePointToState = ({
+    point,
+    isDisabled = false,
+    isSaving = false,
+    isDeleting = false,
+  }) => ({
+    point,
+    isDisabled,
+    isSaving,
+    isDeleting,
+  });
+
   static parseStateToPoint = (state) => state.point;
 }
