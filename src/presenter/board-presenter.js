@@ -142,7 +142,12 @@ export default class BoardPresenter {
     this.#uiBlocker.block();
     switch (action) {
       case UserAction.ADD_POINT:
-        this.#pointsModel.add(updateType, point);
+        this.#newPointPresenter.setSaving();
+        try {
+          await this.#pointsModel.add(updateType, point);
+        } catch {
+          this.#newPointPresenter.setAborting();
+        }
         break;
       case UserAction.UPDATE_POINT:
         this.#pointPresenters.get(point.id).setSaving();
@@ -154,7 +159,12 @@ export default class BoardPresenter {
         }
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.delete(updateType, point);
+        this.#pointPresenters.get(point.id).setDeleting();
+        try {
+          await this.#pointsModel.delete(updateType, point);
+        } catch {
+          this.#pointPresenters.get(point.id).setAborting();
+        }
         break;
     }
 

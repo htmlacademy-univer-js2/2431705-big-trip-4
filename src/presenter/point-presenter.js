@@ -122,6 +122,13 @@ export default class PointPresenter {
     }
   };
 
+  setDeleting = () => {
+    this.#editPointElement.updateElement({
+      isDisabled: true,
+      isDeleting: true
+    });
+  };
+
   destroy = () => {
     remove(this.#editPointElement);
     remove(this.#pointElement);
