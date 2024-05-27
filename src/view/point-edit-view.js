@@ -80,11 +80,11 @@ function createPointControls({type}){
 }
 
 function createPointEditElement({state, destinations, offers, pointType}) {
-  const { point, isDisabled, isSaving, isDeleting } = state;
+  const { point } = state;
   const pointDestination = destinations.find((destination) => destination.id === point.destination);
   const pointOffers = offers.find((subOffers) => subOffers.type === point.type)?.offers;
   const name = pointType === EditType.CREATING ? '' : he.encode(pointDestination.name);
-  const {basePrice, bestPrice } = point;
+  const {basePrice} = point;
   const type = pointType === EditType.CREATING ? DEFAULT_TYPE : point.type;
   const dateFrom = pointType === EditType.CREATING ? '' : formatToSlashDate(point.dateFrom);
   const dateTo = pointType === EditType.CREATING ? '' : formatToSlashDate(point.dateTo);
