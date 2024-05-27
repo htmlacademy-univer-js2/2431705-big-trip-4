@@ -2,7 +2,7 @@ import PointEditView from '../view/point-edit-view';
 import PointView from '../view/point-view';
 import {render,replace,remove } from '../framework/render';
 import { Mode, EditType } from '../const';
-import { isBigDifference } from '../utils.js';
+import { isBigDifference } from '../utils/utils.js';
 import {UpdateType, UserAction} from '../const.js';
 
 
@@ -38,7 +38,6 @@ export default class PointPresenter {
 
     const prevPointElement = this.#pointElement;
     const prevEditPointElement = this.#editPointElement;
-
     this.#pointElement = new PointView({
       point: this.#point,
       pointDestination: this.#destinationsModel.getById(point.destination),
@@ -62,14 +61,22 @@ export default class PointPresenter {
       return;
     }
 
-    replace(this.#pointElement, prevPointElement);
+    if (this.#mode === Mode.DEFAULT) {
+      replace(this.#pointElement, prevPointElement);
+    }
+
+    if (this.#mode === Mode.EDITING) {
+      replace(this.#editPointElement, prevEditPointElement);
+    }
 
 
     remove(prevEditPointElement);
     remove(prevPointElement);
   }
 
-  #onEditClick = () => this.#replaceToForm();
+  #onEditClick = () =>{
+    this.#replaceToForm();
+  };
 
   #onCloseEditClick = () => this.#replaceToPoint();
 
@@ -91,6 +98,21 @@ export default class PointPresenter {
     replace(this.#pointElement, this.#editPointElement);
     document.removeEventListener('keydown', this.#escKeydown);
     this.#mode = Mode.DEFAULT;
+  };
+
+  setSaving = () => {
+    if(this.#mode === Mode.DEFAULT){
+      this.#editPointElement.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  };
+
+  setAborting = () => {
+    if(this.#mode === Mode.DEFAULT){
+      this.#editPointElement.shake();
+    }
   };
 
   resetView = () =>{
@@ -122,6 +144,7 @@ export default class PointPresenter {
       isMinor ? UpdateType.MINOR : UpdateType.PATCH,
       point
     );
+
     this.#replaceToPoint();
   };
 

@@ -3,13 +3,21 @@ import EmptyView from '../view/empty-view';
 import PointPresenter from './point-presenter';
 import NewPointPresenter from './new-point-presenter';
 import SortPresenter from './sort-presenter';
-import {remove, render} from '../framework/render';
-import { filter, sort } from '../utils';
+import {remove, render, RenderPosition} from '../framework/render';
+import { filter, sort } from '../utils/utils';
+import LoadingView from '../view/load-view.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import {FILTER_TYPES, POINT_SORTS, UpdateType, UserAction} from '../const.js';
+
+const TimeLimit = {
+  MIN: 350,
+  MAX: 1000,
+};
 
 export default class BoardPresenter {
   #sortPresenter = null;
   #emptyListElement = null;
+  #loadingElement = new LoadingView();
   #eventListElement = new EventListView();
   #pointPresenters = new Map();
   #destinationsModel;
@@ -20,7 +28,13 @@ export default class BoardPresenter {
   #currentSortType = POINT_SORTS.DAY;
   #isCreating = false;
   #container;
+  #isLoading = true;
+  #isError = false;
   #newPointPresenter;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   constructor({container, destinationsModel, offersModel, pointsModel, filterModel, newPointButtonPresenter}) {
     this.#container = container;
@@ -54,6 +68,17 @@ export default class BoardPresenter {
   }
 
   #renderBoard = () =>{
+
+    if (this.#isLoading) {
+      this.#renderLoader();
+      return;
+    }
+
+    if (this.#isError) {
+      this.#clearBoard({ resetSortType: true });
+      return;
+    }
+
     if (!this.points.length && !this.#isCreating) {
       this.#renderEmptyList();
       return;
@@ -74,6 +99,7 @@ export default class BoardPresenter {
   #clearBoard = ({resetSortType = false} = {}) => {
     this.#clearTaskList();
     remove(this.#emptyListElement);
+    remove(this.#loadingElement);
     if (this.#sortPresenter) {
       this.#sortPresenter.destroy();
       this.#sortPresenter = null;
@@ -96,6 +122,10 @@ export default class BoardPresenter {
     this.#sortPresenter.init();
   };
 
+  #renderLoader = () => {
+    render(this.#loadingElement, this.#container, RenderPosition.AFTERBEGIN);
+  };
+
   #renderPoint(point){
     const pointPresenter = new PointPresenter({
       container: this.#eventListElement.element,
@@ -108,18 +138,27 @@ export default class BoardPresenter {
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
-  #onPointChangeHandler = (action, updateType, point) => {
+  #onPointChangeHandler = async (action, updateType, point) => {
+    this.#uiBlocker.block();
     switch (action) {
       case UserAction.ADD_POINT:
         this.#pointsModel.add(updateType, point);
         break;
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.update(updateType, point);
+        this.#pointPresenters.get(point.id).setSaving();
+        try{
+          await this.#pointsModel.update(updateType, point);
+        }
+        catch{
+          this.#pointPresenters.get(point.id).setAborting();
+        }
         break;
       case UserAction.DELETE_POINT:
         this.#pointsModel.delete(updateType, point);
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #clearTaskList = () => {
@@ -135,6 +174,15 @@ export default class BoardPresenter {
 
   #modelEventHandler = (updateType, data) => {
     switch (updateType) {
+      case UpdateType.INIT:
+        if (data.error) {
+          this.#isError = true;
+        } else {
+          this.#isLoading = false;
+          remove(this.#loadingElement);
+        }
+        this.#renderBoard();
+        break;
       case UpdateType.PATCH:
         this.#pointPresenters.get(data.id).init(data);
         break;
