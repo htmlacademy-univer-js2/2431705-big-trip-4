@@ -62,12 +62,10 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.DEFAULT) {
-      console.log(this.#pointElement, this.#mode);
       replace(this.#pointElement, prevPointElement);
     }
 
     if (this.#mode === Mode.EDITING) {
-      console.log(this.#pointElement, this.#mode);
       replace(this.#editPointElement, prevEditPointElement);
     }
 
