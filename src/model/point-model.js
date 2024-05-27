@@ -41,10 +41,17 @@ export default class PointsModel extends Observable {
     return this.#points.find((point) => point.id === id);
   }
 
-  add(type, point) {
-    const newPoint = this.#service.addPoint(point);
-    this.#points.push(newPoint);
-    this._notify(type, newPoint);
+  async add(type, point) {
+    try {
+      const adaptedToServerPoint = adaptToServer(point);
+      const newPoint = await this.#service.addPoint(adaptedToServerPoint);
+      const adaptedToClientPoint = adaptToClient(newPoint);
+
+      this.#points.push(adaptedToClientPoint);
+      this._notify(type, adaptedToClientPoint);
+    } catch {
+      throw new Error('Can\'t add point');
+    }
   }
 
   async update(type, point) {
@@ -59,9 +66,14 @@ export default class PointsModel extends Observable {
     }
   }
 
-  delete(type, deletedPoint) {
-    this.#service.deletePoint(deletedPoint);
-    this.#points = this.#points.filter((point) => point.id !== deletedPoint.id);
-    this._notify(type);
+  async delete(type, deletedPoint) {
+    try {
+      const adaptedToServerPoint = adaptToServer(deletedPoint);
+      await this.#service.deletePoint(adaptedToServerPoint);
+      this.#points = this.#points.filter((point) => point.id !== deletedPoint.id);
+      this._notify(type);
+    } catch {
+      throw new Error('Can\'t delete point');
+    }
   }
 }

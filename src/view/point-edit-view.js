@@ -1,8 +1,7 @@
-import { POINT_EMPTY, TYPES,EditType } from '../const.js';
+import { POINT_EMPTY, TYPES,EditType, ButtonLabel } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {formatToSlashDate} from '../utils/utils.js';
 import CalendarView from './calendar-view.js';
-import he from 'he';
 
 const DEFAULT_TYPE = 'flight';
 
@@ -58,13 +57,18 @@ function createOfferSelector(pointOffers, offersArray){
 
   return offersElements;
 }
-function createSaveButton() {
-  return '<button class="event__save-btn  btn  btn--blue" type="submit">Save</button>';
+function createSaveButton({isDisabled, isSaving}) {
+  const saveLabel = isSaving ? ButtonLabel.SAVE_IN_PROGRESS : ButtonLabel.SAVE;
+  return `<button class="event__save-btn  btn  btn--blue" ${(isDisabled) ? 'disabled' : ''} type="submit">${saveLabel}</button>`;
 }
 
-function createDeleteButton({type}){
-  const label = type === EditType.CREATING ? 'Cancel' : 'Delete';
-  return `<button class="event__reset-btn" type="reset">${label}</button>`;
+function createDeleteButton({isDisabled, type, isDeleting}){
+
+  let label = type === EditType.CREATING ? ButtonLabel.CANCEL : ButtonLabel.DELETE;
+  if(label === ButtonLabel.DELETE && isDeleting){
+    label = ButtonLabel.DELETE_IN_PROGRESS;
+  }
+  return `<button class="event__reset-btn" type="reset" ${(isDisabled) ? 'disabled' : ''}>${label}</button>`;
 }
 
 function createRollupButton(){
@@ -73,21 +77,22 @@ function createRollupButton(){
 </button>`;
 }
 
-function createPointControls({type}){
-  return `${createSaveButton()}
-  ${createDeleteButton({type})}
+function createPointControls({type, isDeleting, isSaving, isDisabled}){
+  return `${createSaveButton(isSaving, isDisabled)}
+  ${createDeleteButton({type, isDeleting})}
   ${type === EditType.CREATING ? '' : createRollupButton()}`;
 }
 
 function createPointEditElement({state, destinations, offers, pointType}) {
-  const { point } = state;
+  const { point, isDeleting, isDisabled, isSaving } = state;
   const pointDestination = destinations.find((destination) => destination.id === point.destination);
   const pointOffers = offers.find((subOffers) => subOffers.type === point.type)?.offers;
-  const name = pointType === EditType.CREATING ? '' : he.encode(pointDestination.name);
+  const name = pointDestination === undefined ? '' : pointDestination.name;
+
   const {basePrice} = point;
-  const type = pointType === EditType.CREATING ? DEFAULT_TYPE : point.type;
-  const dateFrom = pointType === EditType.CREATING ? '' : formatToSlashDate(point.dateFrom);
-  const dateTo = pointType === EditType.CREATING ? '' : formatToSlashDate(point.dateTo);
+  const type = point.type === null ? DEFAULT_TYPE : point.type;
+  const dateFrom = point.dateFrom === null ? '' : formatToSlashDate(point.dateFrom);
+  const dateTo = point.dateTo === null ? '' : formatToSlashDate(point.dateTo);
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -112,24 +117,24 @@ function createPointEditElement({state, destinations, offers, pointType}) {
           ${type}
           </label>
 
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" ${(isDisabled) ? 'disabled' : ''} value="${name}" list="destination-list-1">
           ${createDestinationList(destinations)}
         </div>
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}">
+          <input class="event__input ${(isDisabled) ? 'disabled' : ''} event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}">
+          <input class="event__input ${(isDisabled) ? 'disabled' : ''} event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}">
         </div>
         <div class="event__field-group  event__field-group--price">
           <label class="event__label" for="event-price-1">
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
+          <input class="event__input ${(isDisabled) ? 'disabled' : ''} event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
         </div>
-        ${createPointControls({type : pointType})}
+        ${createPointControls({type : pointType, isDeleting: isDeleting, isDisabled: isDisabled, isSaving: isSaving})}
       </header>
       <section class="event__details">
       ${createOfferSelector(point?.offers, pointOffers)}

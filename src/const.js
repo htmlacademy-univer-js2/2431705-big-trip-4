@@ -28,6 +28,14 @@ export const Method = {
   DELETE: 'DELETE',
 };
 
+export const ButtonLabel = {
+  CANCEL: 'Cancel',
+  DELETE: 'Delete',
+  SAVE: 'Save',
+  DELETE_IN_PROGRESS: 'Deleting...',
+  SAVE_IN_PROGRESS: 'Saving...'
+};
+
 export const UpdateType = {
   INIT: 'INIT',
   PATCH: 'PATCH',

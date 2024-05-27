@@ -63,6 +63,25 @@ export default class NewPointPresenter {
     this.destroy({ isCanceled: false });
   };
 
+  setSaving = () => {
+    this.#newPointElement.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  };
+
+  setAborting = () => {
+    this.#newPointElement.shake(this.#resetFormState);
+  };
+
+  #resetFormState = () => {
+    this.#newPointElement.updateElement({
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    });
+  };
+
   #onCloseForm = () => {
     this.destroy();
   };
