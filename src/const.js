@@ -4,6 +4,8 @@ export const DESTINATION_COUNT = 5;
 
 export const POINT_COUNT = 5;
 
+const DEFAULT_TYPE = 'flight';
+
 export const Mode = {
   DEFAULT: 'default',
   EDITING: 'editing',
@@ -91,7 +93,7 @@ export const POINT_EMPTY = {
   destination: null,
   isFavorite: false,
   offers: [],
-  type: null,
+  type: DEFAULT_TYPE,
 };
 
 const SEC_IN_MIN = 60;

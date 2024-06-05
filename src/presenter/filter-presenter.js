@@ -35,7 +35,6 @@ export default class FilterPresenter {
     const prevFilterElement = this.#filterElement;
 
     const filters = this.filters;
-
     this.#filterElement = new FilterView({
       items: filters,
       onItemChange: this.#onChangeFilter,
