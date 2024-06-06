@@ -1,5 +1,5 @@
 import Observable from '../framework/observable';
-import { updateItem } from '../mock/util.js';
+import { updateItem } from '../utils/common.js';
 import {UpdateType} from '../const.js';
 import { adaptToClient, adaptToServer } from '../utils/adapter.js';
 

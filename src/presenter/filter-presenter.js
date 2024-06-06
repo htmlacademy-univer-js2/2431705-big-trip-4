@@ -1,6 +1,6 @@
 import { UpdateType } from '../const';
 import { render, replace, remove } from '../framework/render';
-import { filter } from '../utils/utils.js';
+import { filter } from '../utils/common.js';
 import FilterView from '../view/filter-view';
 
 export default class FilterPresenter {
@@ -35,7 +35,6 @@ export default class FilterPresenter {
     const prevFilterElement = this.#filterElement;
 
     const filters = this.filters;
-
     this.#filterElement = new FilterView({
       items: filters,
       onItemChange: this.#onChangeFilter,
