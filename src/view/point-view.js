@@ -1,6 +1,6 @@
 import { POINT_EMPTY} from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
-import{formatStringDateTime, getPointDuration, formatStringTime, formatStringDate} from '../utils/utils.js';
+import{formatStringDateTime, getPointDuration, formatStringTime, formatStringDate} from '../utils/common.js';
 
 
 function createOfferElements(pointOffers, selectedOffers) {

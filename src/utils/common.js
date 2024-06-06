@@ -1,8 +1,10 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import {MSEC_IN_DAY, MSEC_IN_HOUR, FILTER_TYPES, POINT_SORTS} from '../const';
+import {MSEC_IN_DAY, MSEC_IN_HOUR, FILTER_TYPES, POINT_SORTS} from '../const.js';
 
+
+export const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -39,7 +41,7 @@ export const getPointDuration = (point) => {
 
   }};
 
-export const isBigDifference = (pointA, pointB) =>
+export const isMinorUpdate = (pointA, pointB) =>
   pointA.dateFrom !== pointB.dateFrom ||
   pointA.basePrice !== pointB.basePrice ||
   getPointDuration(pointA.dateFrom, pointA.dateTo) !== getPointDuration(pointB.dateFrom, pointB.dateTo);

@@ -1,9 +1,8 @@
 import { POINT_EMPTY, TYPES,EditType, ButtonLabel } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {formatToSlashDate} from '../utils/utils.js';
+import {formatToSlashDate} from '../utils/common.js';
 import CalendarView from './calendar-view.js';
-
-const DEFAULT_TYPE = 'flight';
+import he from 'he';
 
 function createTypesElements(typeArray){
 
@@ -78,7 +77,7 @@ function createRollupButton(){
 }
 
 function createPointControls({type, isDeleting, isSaving, isDisabled}){
-  return `${createSaveButton(isSaving, isDisabled)}
+  return `${createSaveButton({isSaving, isDisabled})}
   ${createDeleteButton({type, isDeleting})}
   ${type === EditType.CREATING ? '' : createRollupButton()}`;
 }
@@ -87,10 +86,10 @@ function createPointEditElement({state, destinations, offers, pointType}) {
   const { point, isDeleting, isDisabled, isSaving } = state;
   const pointDestination = destinations.find((destination) => destination.id === point.destination);
   const pointOffers = offers.find((subOffers) => subOffers.type === point.type)?.offers;
-  const name = pointDestination === undefined ? '' : pointDestination.name;
+  const name = pointDestination === undefined ? '' : he.encode(pointDestination.name);
 
   const {basePrice} = point;
-  const type = point.type === null ? DEFAULT_TYPE : point.type;
+  const type = point.type;
   const dateFrom = point.dateFrom === null ? '' : formatToSlashDate(point.dateFrom);
   const dateTo = point.dateTo === null ? '' : formatToSlashDate(point.dateTo);
 
@@ -141,7 +140,7 @@ function createPointEditElement({state, destinations, offers, pointType}) {
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${pointType === EditType.CREATING ? '' : pointDestination.description}</p>
+          <p class="event__destination-description">${pointDestination === undefined ? '' : pointDestination.description}</p>
           <div class="event__photos-container">
           ${createDestinationPhotos(pointDestination)}
           </div>
@@ -241,6 +240,9 @@ export default class EditPointView extends AbstractStatefulView{
   #onDestinationChange = (evt) => {
     const newDestinationName = evt.target.value;
     const newDestination = this.#destinations.find((dest) => dest.name === newDestinationName);
+    if (!newDestination) {
+      return;
+    }
     this.updateElement({
       point: {
         ...this._state.point,

@@ -4,6 +4,8 @@ export const DESTINATION_COUNT = 5;
 
 export const POINT_COUNT = 5;
 
+const DEFAULT_TYPE = 'flight';
+
 export const Mode = {
   DEFAULT: 'default',
   EDITING: 'editing',
@@ -84,6 +86,13 @@ export const EnabledSortType = {
   [POINT_SORTS.OFFERS]: false
 };
 
+export const EmptyListMessage = {
+  [FILTER_TYPES.EVERYTHING]: 'Click New Event to create your first point',
+  [FILTER_TYPES.FUTURE]: 'There are no future events now',
+  [FILTER_TYPES.PRESENT]: 'There are no present events now',
+  [FILTER_TYPES.PAST]: 'There are no past events now'
+};
+
 export const POINT_EMPTY = {
   basePrice: 0,
   dateFrom: null,
@@ -91,7 +100,7 @@ export const POINT_EMPTY = {
   destination: null,
   isFavorite: false,
   offers: [],
-  type: null,
+  type: DEFAULT_TYPE,
 };
 
 const SEC_IN_MIN = 60;

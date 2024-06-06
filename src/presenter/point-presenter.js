@@ -2,7 +2,7 @@ import PointEditView from '../view/point-edit-view';
 import PointView from '../view/point-view';
 import {render,replace,remove } from '../framework/render';
 import { Mode, EditType } from '../const';
-import { isBigDifference } from '../utils/utils.js';
+import { isMinorUpdate } from '../utils/common.js';
 import {UpdateType, UserAction} from '../const.js';
 
 
@@ -78,7 +78,12 @@ export default class PointPresenter {
     this.#replaceToForm();
   };
 
-  #onCloseEditClick = () => this.#replaceToPoint();
+  #onCloseEditClick = () => {
+    if (!this.#editPointElement.isDisabled) {
+      this.#editPointElement.reset(this.#point);
+      this.#replaceToPoint();
+    }
+  };
 
   #escKeydown = (evt) => {
     if (evt.keyCode === 27 || evt.key === 'Escape') {
@@ -101,7 +106,7 @@ export default class PointPresenter {
   };
 
   setSaving = () => {
-    if(this.#mode === Mode.DEFAULT){
+    if(this.#mode === Mode.EDITING){
       this.#editPointElement.updateElement({
         isDisabled: true,
         isSaving: true,
@@ -113,12 +118,15 @@ export default class PointPresenter {
     if(this.#mode === Mode.DEFAULT){
       this.#editPointElement.shake();
     }
+    else {
+      this.#editPointElement.shake(this.#resetFormState);
+    }
   };
 
   resetView = () =>{
     if(this.#mode !== Mode.DEFAULT){
-      this.#replaceToPoint();
       this.#editPointElement.reset(this.#point);
+      this.#replaceToPoint();
     }
   };
 
@@ -126,6 +134,14 @@ export default class PointPresenter {
     this.#editPointElement.updateElement({
       isDisabled: true,
       isDeleting: true
+    });
+  };
+
+  #resetFormState = () => {
+    this.#editPointElement.updateElement({
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false
     });
   };
 
@@ -145,14 +161,15 @@ export default class PointPresenter {
   };
 
   #formSubmitHandler = (point) => {
-    const isMinor = isBigDifference(point, this.#point);
+    const isMinor = isMinorUpdate(point, this.#point);
     this.#onPointsChangeHandler(
       UserAction.UPDATE_POINT,
       isMinor ? UpdateType.MINOR : UpdateType.PATCH,
       point
     );
-
-    this.#replaceToPoint();
+    if (!this.#editPointElement._state.isDisabled) {
+      this.#replaceToPoint();
+    }
   };
 
   #onEditPointDelete = (point) =>{
