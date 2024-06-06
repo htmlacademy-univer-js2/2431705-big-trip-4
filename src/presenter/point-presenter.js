@@ -116,7 +116,7 @@ export default class PointPresenter {
 
   setAborting = () => {
     if(this.#mode === Mode.DEFAULT){
-      this.#editPointElement.shake();
+      this.#pointElement.shake();
     }
     else {
       this.#editPointElement.shake(this.#resetFormState);
@@ -167,9 +167,6 @@ export default class PointPresenter {
       isMinor ? UpdateType.MINOR : UpdateType.PATCH,
       point
     );
-    if (!this.#editPointElement._state.isDisabled) {
-      this.#replaceToPoint();
-    }
   };
 
   #onEditPointDelete = (point) =>{
