@@ -102,9 +102,9 @@ export const POINT_EMPTY = {
   offers: [],
   type: DEFAULT_TYPE,
 };
-
+const MSEC_IN_SEC = 1000;
 const SEC_IN_MIN = 60;
 const MIN_IN_HOUR = 60;
 const HOUR_IN_DAY = 24;
-export const MSEC_IN_HOUR = MIN_IN_HOUR * SEC_IN_MIN;
+export const MSEC_IN_HOUR = MIN_IN_HOUR * SEC_IN_MIN * MSEC_IN_SEC;
 export const MSEC_IN_DAY = HOUR_IN_DAY * MSEC_IN_HOUR;

@@ -48,7 +48,7 @@ export const isMinorUpdate = (pointA, pointB) =>
 
 export const getDateDiff = (pointA, pointB) => dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 
-export const getPriceDiff = (pointA, pointB) => pointA.basePrice - pointB.basePrice;
+export const getPriceDiff = (pointA, pointB) => pointB.basePrice - pointA.basePrice;
 
 export const getDurationDiff = (pointA, pointB) =>
   dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom)) - dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
