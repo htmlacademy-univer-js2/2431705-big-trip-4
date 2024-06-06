@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { sort } from './utils.js';
+import { sort } from './common.js';
 
 const getOffersCost = (currentOffers, offers) => {
   let totalCost = 0;

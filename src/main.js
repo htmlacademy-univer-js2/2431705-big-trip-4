@@ -23,7 +23,7 @@ const pointsModel = new PointsModel({service : service, destinationsModel : dest
 const filterModel = new FilterModel();
 
 const newPointButtonPresenter = new NewPointButtonPresenter({
-  container: tripEventsContainer
+  container: siteMainContainer
 });
 
 const tripInfoPresenter = new TripInfoPresenter({
@@ -48,12 +48,10 @@ const filterPresenter = new FilterPresenter({
   filterModel,
 });
 
-
-newPointButtonPresenter.init({
-  onButtonClick:boardPresenter.handleNewPointClick
-});
-
 pointsModel.init();
 filterPresenter.init();
 boardPresenter.init();
+newPointButtonPresenter.init({
+  onButtonClick:boardPresenter.handleNewPointClick
+});
 tripInfoPresenter.init();

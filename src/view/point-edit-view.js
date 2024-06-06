@@ -1,6 +1,6 @@
 import { POINT_EMPTY, TYPES,EditType, ButtonLabel } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {formatToSlashDate} from '../utils/utils.js';
+import {formatToSlashDate} from '../utils/common.js';
 import CalendarView from './calendar-view.js';
 import he from 'he';
 
@@ -77,7 +77,7 @@ function createRollupButton(){
 }
 
 function createPointControls({type, isDeleting, isSaving, isDisabled}){
-  return `${createSaveButton(isSaving, isDisabled)}
+  return `${createSaveButton({isSaving, isDisabled})}
   ${createDeleteButton({type, isDeleting})}
   ${type === EditType.CREATING ? '' : createRollupButton()}`;
 }
@@ -140,7 +140,7 @@ function createPointEditElement({state, destinations, offers, pointType}) {
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${pointType === EditType.CREATING ? '' : pointDestination.description}</p>
+          <p class="event__destination-description">${pointDestination === undefined ? '' : pointDestination.description}</p>
           <div class="event__photos-container">
           ${createDestinationPhotos(pointDestination)}
           </div>

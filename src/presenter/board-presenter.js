@@ -5,7 +5,7 @@ import PointPresenter from './point-presenter';
 import NewPointPresenter from './new-point-presenter';
 import SortPresenter from './sort-presenter';
 import {remove, render, RenderPosition} from '../framework/render';
-import { filter, sort } from '../utils/utils';
+import { filter, sort } from '../utils/common.js';
 import LoadingView from '../view/load-view.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import {FILTER_TYPES, POINT_SORTS, UpdateType, UserAction} from '../const.js';
@@ -70,15 +70,13 @@ export default class BoardPresenter {
   }
 
   #renderBoard = () =>{
-
-    if (this.#isLoading) {
-      this.#renderLoader();
-      return;
-    }
-
     if (this.#isError) {
       this.#renderError();
       this.#clearBoard({ resetSortType: true });
+      return;
+    }
+    if (this.#isLoading) {
+      this.#renderLoader();
       return;
     }
 
@@ -181,6 +179,7 @@ export default class BoardPresenter {
   #clearTaskList = () => {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
+    this.#newPointPresenter.destroy();
   };
 
   #handleSortChange = (sortType) => {
@@ -203,8 +202,10 @@ export default class BoardPresenter {
         break;
       case UpdateType.PATCH:
         this.#pointPresenters.get(data.id).init(data);
+        this.#pointPresenters.get(data.id).resetView();
         break;
       case UpdateType.MINOR:
+
         this.#clearBoard();
         this.#renderBoard();
         break;

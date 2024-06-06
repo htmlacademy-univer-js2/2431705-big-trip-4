@@ -86,6 +86,13 @@ export const EnabledSortType = {
   [POINT_SORTS.OFFERS]: false
 };
 
+export const EmptyListMessage = {
+  [FILTER_TYPES.EVERYTHING]: 'Click New Event to create your first point',
+  [FILTER_TYPES.FUTURE]: 'There are no future events now',
+  [FILTER_TYPES.PRESENT]: 'There are no present events now',
+  [FILTER_TYPES.PAST]: 'There are no past events now'
+};
+
 export const POINT_EMPTY = {
   basePrice: 0,
   dateFrom: null,
