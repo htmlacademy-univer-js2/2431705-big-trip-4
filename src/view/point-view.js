@@ -1,6 +1,6 @@
 import { POINT_EMPTY} from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
-import{formatStringDateTime, getPointDuration, formatStringTime, formatStringDate} from '../utils/common.js';
+import{formatStringDateTime, getPointDuration, formatStringTime, formatStringToShortDate} from '../utils/common.js';
 
 
 function createOfferElements(pointOffers, selectedOffers) {
@@ -21,7 +21,7 @@ function createPointElement({point, pointDestination, pointOffers}) {
   return `
     <li class="trip-events__item">
       <div class="event">
-        <time class="event__date" datetime="${formatStringDate(dateFrom)}">${formatStringDate(dateFrom)}</time>
+        <time class="event__date" datetime="${formatStringToShortDate(dateFrom)}">${formatStringToShortDate(dateFrom)}</time>
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>

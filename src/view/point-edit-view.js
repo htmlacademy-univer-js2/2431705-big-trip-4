@@ -1,16 +1,17 @@
-import { POINT_EMPTY, TYPES,EditType, ButtonLabel } from '../const.js';
+import { POINT_EMPTY, POINT_TYPES,EditType, ButtonLabel } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {formatToSlashDate} from '../utils/common.js';
+import {formatToSlashDate, title} from '../utils/common.js';
 import CalendarView from './calendar-view.js';
 import he from 'he';
 
-function createTypesElements(typeArray){
+function createTypesElements(typeArray, selectedType){
 
   let typesElements = '';
   typeArray.forEach((type) => {
+    const checked = selectedType === type ? 'checked' : '';
     typesElements += `<div class="event__type-item">
-  <input id="event-type-${type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
-  <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type}-1">${type}</label>
+  <input id="event-type-${type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${checked}>
+  <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type}-1">${title(type)}</label>
 </div>`;
   });
 
@@ -107,13 +108,13 @@ function createPointEditElement({state, destinations, offers, pointType}) {
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
 
-              ${createTypesElements(TYPES)}
+              ${createTypesElements(POINT_TYPES, type)}
             </fieldset>
           </div>
         </div>
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-          ${type}
+          ${title(type)}
           </label>
 
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" ${(isDisabled) ? 'disabled' : ''} value="${name}" list="destination-list-1">

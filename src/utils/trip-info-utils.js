@@ -21,7 +21,6 @@ export const getTripDates = (points) => {
 
   const startDate = dayjs(sortedPoints[0].dateFrom).format('DD MMM');
   const finishDate = dayjs(sortedPoints[sortedPoints.length - 1].dateTo).format('DD MMM');
-
   return `${startDate} &mdash; ${finishDate}`;
 };
 

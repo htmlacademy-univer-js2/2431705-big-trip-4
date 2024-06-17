@@ -8,7 +8,7 @@ import {remove, render, RenderPosition} from '../framework/render';
 import { filter, sort } from '../utils/common.js';
 import LoadingView from '../view/load-view.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
-import {FILTER_TYPES, POINT_SORTS, UpdateType, UserAction} from '../const.js';
+import {FilterTypes, PointSorts, UpdateType, UserAction} from '../const.js';
 
 const TimeLimit = {
   MIN: 350,
@@ -27,7 +27,7 @@ export default class BoardPresenter {
   #filterModel;
   #pointsModel;
   #newPointButtonPresenter;
-  #currentSortType = POINT_SORTS.DAY;
+  #currentSortType = PointSorts.DAY;
   #isCreating = false;
   #container;
   #isLoading = true;
@@ -109,9 +109,8 @@ export default class BoardPresenter {
       this.#sortPresenter.destroy();
       this.#sortPresenter = null;
     }
-
     if (resetSortType) {
-      this.#currentSortType = POINT_SORTS.DAY;
+      this.#currentSortType = PointSorts.DAY;
     }
   };
 
@@ -122,6 +121,7 @@ export default class BoardPresenter {
   #renderSort = () =>{
     this.#sortPresenter = new SortPresenter({
       container: this.#container,
+      currentSortType: this.#currentSortType,
       handleSortChange: this.#handleSortChange,
     });
     this.#sortPresenter.init();
@@ -205,13 +205,12 @@ export default class BoardPresenter {
         this.#pointPresenters.get(data.id).resetView();
         break;
       case UpdateType.MINOR:
-
         this.#clearBoard();
         this.#renderBoard();
         break;
       case UpdateType.MAJOR:
-        this.#clearBoard();
-        this.#renderBoard({resetSortType: true});
+        this.#clearBoard({resetSortType: true});
+        this.#renderBoard();
         break;
     }
   };
@@ -223,8 +222,8 @@ export default class BoardPresenter {
 
   handleNewPointClick = () => {
     this.#isCreating = true;
-    this.#currentSortType = POINT_SORTS.DAY;
-    this.#filterModel.set(UpdateType.MAJOR, FILTER_TYPES.EVERYTHING);
+    this.#currentSortType = PointSorts.DAY;
+    this.#filterModel.set(UpdateType.MAJOR, FilterTypes.EVERYTHING);
     this.#newPointButtonPresenter.disableButton();
     this.#newPointPresenter.init();
   };

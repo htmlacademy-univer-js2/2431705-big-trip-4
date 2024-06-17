@@ -1,4 +1,4 @@
-import { EnabledSortType, POINT_SORTS } from '../const';
+import { EnabledSortType, PointSorts } from '../const';
 import { render, remove } from '../framework/render';
 import SortView from '../view/sort-view';
 
@@ -7,10 +7,11 @@ export default class SortPresenter {
 
   #sortElement = null;
   #handleSortChange = null;
-  #currentSortPoint = POINT_SORTS.DAY;
+  #currentSortPoint = null;
 
-  constructor({ container, handleSortChange }) {
+  constructor({ container,currentSortType, handleSortChange }) {
     this.#container = container;
+    this.#currentSortPoint = currentSortType;
     this.#handleSortChange = handleSortChange;
   }
 
@@ -19,7 +20,7 @@ export default class SortPresenter {
   }
 
   init() {
-    const items = Object.values(POINT_SORTS).map((sort) => ({
+    const items = Object.values(PointSorts).map((sort) => ({
       type: sort,
       isChecked: sort === this.#currentSortPoint,
       isDisabled: !EnabledSortType[sort],
