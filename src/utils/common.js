@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import {MSEC_IN_DAY, MSEC_IN_HOUR, FILTER_TYPES, POINT_SORTS} from '../const.js';
+import {MSEC_IN_DAY, MSEC_IN_HOUR, FilterTypes, PointSorts} from '../const.js';
 
 
 export const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
@@ -18,8 +18,6 @@ const isPointDatePresent = (dateFrom, dateTo) => dayjs().isAfter(dateFrom) && da
 export const formatStringDateTime = (date) => dayjs(date).format('YYYY-MM-DDTHH:mm');
 
 export const formatStringTime = (date) => dayjs(date).format('HH:mm');
-
-export const formatStringDate = (date) => dayjs(date).format('YYYY-MM-DDT');
 
 export const formatStringToShortDate = (date) => dayjs(date).format('MMM DD');
 
@@ -54,19 +52,21 @@ export const getDurationDiff = (pointA, pointB) =>
   dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom)) - dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
 
 export const filter = {
-  [FILTER_TYPES.EVERYTHING]: (points) => points,
-  [FILTER_TYPES.FUTURE]: (points) => points.filter((point) => isPointDateFuture(point.dateFrom)),
-  [FILTER_TYPES.PRESENT] : (points) => points.filter((point) => isPointDatePresent(point.dateFrom, point.dateTo)),
-  [FILTER_TYPES.PAST]: (points) => points.filter((point) => isPointDatePast(point.dateTo)),
+  [FilterTypes.EVERYTHING]: (points) => points,
+  [FilterTypes.FUTURE]: (points) => points.filter((point) => isPointDateFuture(point.dateFrom)),
+  [FilterTypes.PRESENT] : (points) => points.filter((point) => isPointDatePresent(point.dateFrom, point.dateTo)),
+  [FilterTypes.PAST]: (points) => points.filter((point) => isPointDatePast(point.dateTo)),
 };
 
 export const sorter = {
-  [POINT_SORTS.DAY]: (points) => points.sort(getDateDiff),
-  [POINT_SORTS.PRICE]: (points) => points.sort(getPriceDiff),
-  [POINT_SORTS.TIME]: (points) => points.sort(getDurationDiff),
+  [PointSorts.DAY]: (points) => points.sort(getDateDiff),
+  [PointSorts.PRICE]: (points) => points.sort(getPriceDiff),
+  [PointSorts.TIME]: (points) => points.sort(getDurationDiff),
 };
 
-export const sort = (points, sortType = POINT_SORTS.DAY) => {
+export const title = (word) => word.charAt(0).toUpperCase() + word.slice(1);
+
+export const sort = (points, sortType = PointSorts.DAY) => {
   if (!sorter[sortType]) {
     throw new Error(`Sort by ${sortType} is not implemented`);
   }

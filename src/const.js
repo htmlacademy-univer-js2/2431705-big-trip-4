@@ -11,7 +11,7 @@ export const Mode = {
   EDITING: 'editing',
 };
 
-export const TYPES = [
+export const POINT_TYPES = [
   'taxi',
   'flight',
   'bus',
@@ -56,21 +56,14 @@ export const UserAction = {
   DELETE_POINT: 'DELETE_POINT',
 };
 
-export const FILTER_TYPES = {
+export const FilterTypes = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PRESENT: 'present',
   PAST: 'past'
 };
 
-export const POINT_FILTERS = [
-  'everything',
-  'future',
-  'present',
-  'past',
-];
-
-export const POINT_SORTS = {
+export const PointSorts = {
   DAY: 'day',
   EVENT: 'event',
   TIME: 'time',
@@ -79,18 +72,18 @@ export const POINT_SORTS = {
 };
 
 export const EnabledSortType = {
-  [POINT_SORTS.DAY]: true,
-  [POINT_SORTS.EVENT]: false,
-  [POINT_SORTS.TIME]: true,
-  [POINT_SORTS.PRICE]: true,
-  [POINT_SORTS.OFFERS]: false
+  [PointSorts.DAY]: true,
+  [PointSorts.EVENT]: false,
+  [PointSorts.TIME]: true,
+  [PointSorts.PRICE]: true,
+  [PointSorts.OFFERS]: false
 };
 
 export const EmptyListMessage = {
-  [FILTER_TYPES.EVERYTHING]: 'Click New Event to create your first point',
-  [FILTER_TYPES.FUTURE]: 'There are no future events now',
-  [FILTER_TYPES.PRESENT]: 'There are no present events now',
-  [FILTER_TYPES.PAST]: 'There are no past events now'
+  [FilterTypes.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterTypes.FUTURE]: 'There are no future events now',
+  [FilterTypes.PRESENT]: 'There are no present events now',
+  [FilterTypes.PAST]: 'There are no past events now'
 };
 
 export const POINT_EMPTY = {
