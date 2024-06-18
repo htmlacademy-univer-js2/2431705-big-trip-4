@@ -37,7 +37,7 @@ export default class FilterPresenter {
     const filters = this.filters;
     this.#filterElement = new FilterView({
       items: filters,
-      onItemChange: this.#onChangeFilter,
+      onItemChange: this.#onFilterChange,
     });
 
     if (!prevFilterElement) {
@@ -49,7 +49,7 @@ export default class FilterPresenter {
     remove(prevFilterElement);
   }
 
-  #onChangeFilter = (filterType) => {
+  #onFilterChange = (filterType) => {
     this.#filterModel.set(UpdateType.MAJOR, filterType);
   };
 
