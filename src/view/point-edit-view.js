@@ -155,8 +155,8 @@ export default class EditPointView extends AbstractStatefulView{
 
   #destinations;
   #offers;
-  #onCloseEditPoint;
-  #onSubmiClick;
+  #onEditPointClose;
+  #onSubmitClick;
   #datepickerFrom;
   #datepickerTo;
   #onDeleteClick;
@@ -167,8 +167,8 @@ export default class EditPointView extends AbstractStatefulView{
     this.#destinations = destinations;
     this.onDeleteClick = onDeleteClick;
     this.#offers = offers;
-    this.#onCloseEditPoint = onCloseEditPoint;
-    this.#onSubmiClick = onSubmiClick;
+    this.#onEditPointClose = onCloseEditPoint;
+    this.#onSubmitClick = onSubmiClick;
     this.#onDeleteClick = onDeleteClick;
     this.#pointType = pointType;
     this._setState(EditPointView.parsePointToState({point}));
@@ -178,7 +178,7 @@ export default class EditPointView extends AbstractStatefulView{
   _restoreHandlers = () =>{
     this.element
       .querySelector('.event__input--destination')
-      .addEventListener('change', this.#onDestinationChange);
+      .addEventListener('change', this.#destinationChangeHandler);
     this.element
       .querySelector('.event__available-offers')
       .addEventListener('change', this.#offerChangeHandler);
@@ -238,7 +238,7 @@ export default class EditPointView extends AbstractStatefulView{
 
   reset = (point) => this.updateElement({ point });
 
-  #onDestinationChange = (evt) => {
+  #destinationChangeHandler = (evt) => {
     const newDestinationName = evt.target.value;
     const newDestination = this.#destinations.find((dest) => dest.name === newDestinationName);
     if (!newDestination) {
@@ -287,12 +287,12 @@ export default class EditPointView extends AbstractStatefulView{
 
   #closeEditPointHandler = (evt) => {
     evt.preventDefault();
-    this.#onCloseEditPoint();
+    this.#onEditPointClose();
   };
 
   #submiClickHandler = (evt) => {
     evt.preventDefault();
-    this.#onSubmiClick(EditPointView.parseStateToPoint(this._state));
+    this.#onSubmitClick(EditPointView.parseStateToPoint(this._state));
   };
 
   #setDatapickers = () =>{

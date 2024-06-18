@@ -33,8 +33,8 @@ export default class NewPointPresenter {
     this.#newPointElement = new PointEditView({
       destinations: this.#destinationsModel.getAll(),
       offers: this.#offersModel.getAll(),
-      onSubmiClick: this.#onSubmitForm,
-      onCloseEditPoint: this.#onCloseForm,
+      onSubmiClick: this.#onFormSubmit,
+      onCloseEditPoint: this.#onFormClose,
       pointType: EditType.CREATING
     });
 
@@ -53,7 +53,7 @@ export default class NewPointPresenter {
     this.#handleDestroy({ isCanceled });
   };
 
-  #onSubmitForm = (point) => {
+  #onFormSubmit = (point) => {
     this.#handleDataChange(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
@@ -80,7 +80,7 @@ export default class NewPointPresenter {
     this.#newPointElement.shake(resetFormState);
   }
 
-  #onCloseForm = () => {
+  #onFormClose = () => {
     this.destroy();
   };
 
